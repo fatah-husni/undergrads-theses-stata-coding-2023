@@ -1,0 +1,23 @@
+* Step 1: Define moment conditions
+gen Z1 = variable1 - rho*variable1[_n-1]
+gen Z2 = variable2 - rho*variable2[_n-1]
+gen Z3 = variable3 - rho*variable3[_n-1]
+gen Z4 = variable4 - rho*variable4[_n-1]
+gen Z5 = variable5 - rho*variable5[_n-1]
+
+* Step 2: Estimate the parameters using GMM
+gmm (dependent_variable = independent_variables) (Z1 Z2 Z3 Z4 Z5), lag(1) weight(W)
+
+
+
+
+*TAMBAHAN
+* Step 1: Define moment conditions
+gen Z1 = ECI[_n-1] - beta1*Initial_ECI[_n-1] - beta2*GDP[_n-1] - beta3*Population_Density[_n-1] - beta4*Capital[_n-1] - beta5*Agriculture[_n-1] - beta6*Trade[_n-1] - beta7*FDI[_n-1]
+gen Z2 = ECI[_n-2] - beta1*Initial_ECI[_n-2] - beta2*GDP[_n-2] - beta3*Population_Density[_n-2] - beta4*Capital[_n-2] - beta5*Agriculture[_n-2] - beta6*Trade[_n-2] - beta7*FDI[_n-2]
+
+* Step 2: Estimate the parameters using GMM
+xtabond2 ECI Initial_ECI GDP Population_Density Capital Agriculture Trade FDI, gmm(Z1 Z2) iv(Initial_ECI) robust lag(2) level(country_code) time(year)
+
+* Additional Step: Test for the validity of moment conditions
+estat overid
