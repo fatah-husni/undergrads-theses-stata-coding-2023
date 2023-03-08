@@ -9,3 +9,11 @@ gen diff_FDI = FDI - L1.FDI
 
 * Step 2: Estimate the parameters using GMM
 xtabond2 diff_ECI L1.diff_ECI diff_GDP diff_Population_Density diff_Capital diff_Agriculture diff_Trade diff_FDI, gmm(L1.diff_ECI = diff_ECI L1.diff_ECI diff_GDP diff_Population_Density diff_Capital diff_Agriculture diff_Trade diff_FDI, lag(1)) iv(Initial_ECI = L1.Initial_ECI) robust small nlag(1) by(country_code)
+
+In this example, ECI is the dependent variable and Initial_ECI, GDP, Population_Density, Capital, Agriculture, Trade, and FDI are the independent variables. L1 is the lag operator for each variable, and diff is the first difference operator.
+
+The xtabond2 command estimates the two-step GMM model with dynamic panel data regression. The gmm option specifies the moment conditions, where L1.diff_ECI is the lagged first difference of ECI, and diff_ECI, diff_GDP, diff_Population_Density, diff_Capital, diff_Agriculture, diff_Trade, and diff_FDI are the first differences of the independent variables. The iv option specifies that Initial_ECI is an instrumental variable for L1.diff_ECI. The robust option specifies that robust standard errors should be used. The small option adjusts the GMM weighting matrix to account for the small number of groups. The nlag option specifies the number of lags used in the GMM estimator.
+
+The by option specifies that the model is estimated separately for each country_code group. The 107 observations are split into 6 groups, with each group containing 17 observations.
+
+Note that you may need to adjust the code to match the variable names and types in your dataset. Also, make sure to check the validity of the moment conditions using the Sargan test or Hansen J test.
