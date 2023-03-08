@@ -1,0 +1,11 @@
+* Step 1: Define moment conditions
+gen diff_ECI = ECI - L1.ECI
+gen diff_GDP = GDP - L1.GDP
+gen diff_Population_Density = Population_Density - L1.Population_Density
+gen diff_Capital = Capital - L1.Capital
+gen diff_Agriculture = Agriculture - L1.Agriculture
+gen diff_Trade = Trade - L1.Trade
+gen diff_FDI = FDI - L1.FDI
+
+* Step 2: Estimate the parameters using GMM
+xtabond2 diff_ECI L1.diff_ECI diff_GDP diff_Population_Density diff_Capital diff_Agriculture diff_Trade diff_FDI, gmm(L1.diff_ECI = diff_ECI L1.diff_ECI diff_GDP diff_Population_Density diff_Capital diff_Agriculture diff_Trade diff_FDI, lag(1)) iv(Initial_ECI = L1.Initial_ECI) robust small nlag(1) by(country_code)
