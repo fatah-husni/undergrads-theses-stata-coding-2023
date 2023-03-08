@@ -1,0 +1,64 @@
+*Static model of Two-Step GMM
+* Step 1: Obtain the moment conditions
+gen D_ECI = ECI - Initial_ECI
+gen D_GDP = GDP - L.GDP
+gen D_Population_Density = Population_Density - L.Population_Density
+gen D_Capital = Capital - L.Capital
+gen D_Agriculture = Agriculture - L.Agriculture
+gen D_Trade = Trade - L.Trade
+gen D_FDI = FDI - L.FDI
+
+gen Z1 = D_ECI - rho*D_ECI[_n-1]
+gen Z2 = D_GDP - rho*D_GDP[_n-1]
+gen Z3 = D_Population_Density - rho*D_Population_Density[_n-1]
+gen Z4 = D_Capital - rho*D_Capital[_n-1]
+gen Z5 = D_Agriculture - rho*D_Agriculture[_n-1]
+gen Z6 = D_Trade - rho*D_Trade[_n-1]
+gen Z7 = D_FDI - rho*D_FDI[_n-1]
+
+* Step 2: Estimate the parameters using GMM
+gen W = J(7,7,0)
+matrix list W
+
+matrix W[1,1] = e(N)/sum(Z1^2)
+matrix W[2,2] = e(N)/sum(Z2^2)
+matrix W[3,3] = e(N)/sum(Z3^2)
+matrix W[4,4] = e(N)/sum(Z4^2)
+matrix W[5,5] = e(N)/sum(Z5^2)
+matrix W[6,6] = e(N)/sum(Z6^2)
+matrix W[7,7] = e(N)/sum(Z7^2)
+
+matrix list W
+
+matrix Z = J(7,1,0)
+matrix list Z
+
+matrix Z[1,1] = sum(Z1)
+matrix Z[2,1] = sum(Z2)
+matrix Z[3,1] = sum(Z3)
+matrix Z[4,1] = sum(Z4)
+matrix Z[5,1] = sum(Z5)
+matrix Z[6,1] = sum(Z6)
+matrix Z[7,1] = sum(Z7)
+
+matrix list Z
+
+matrix Z_star = J(7,1,0)
+matrix list Z_star
+
+matrix Z_star[1,1] = sum(D_ECI[2:])
+matrix Z_star[2,1] = sum(D_GDP[2:])
+matrix Z_star[3,1] = sum(D_Population_Density[2:])
+matrix Z_star[4,1] = sum(D_Capital[2:])
+matrix Z_star[5,1] = sum(D_Agriculture[2:])
+matrix Z_star[6,1] = sum(D_Trade[2:])
+matrix Z_star[7,1] = sum(D_FDI[2:])
+
+matrix list Z_star
+
+matrix beta = invsym(Z'*W*Z)*(Z'*W*Z_star)
+matrix list beta
+
+* Optional: Test for overidentifying restrictions
+gen gmm_resid = Z_star - Z*beta
+matrix e(Z'*W*gmm_resid)
